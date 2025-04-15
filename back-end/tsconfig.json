@@ -1,0 +1,25 @@
+// {
+//   "compilerOptions": {
+//     "module": "commonjs",
+//     "esModuleInterop": true,
+//     "target": "es6",
+//     "moduleResolution": "node",
+//     "sourceMap": true,
+//     "outDir": "dist"
+//   },
+//   "lib": ["es2015"]
+// }
+
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",               // ✅ Must match resolution style
+    "moduleResolution": "NodeNext",    // ✅ Required for ESM in Node
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}
