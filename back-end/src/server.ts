@@ -35,14 +35,19 @@ app.post('/api/articles/:articleName/upvote', async (req, res) => {
   res.json(updatedArticle);
 });
 
-app.post('/api/articles/:articleName/comments', (req, res) => {
+app.post('/api/articles/:articleName/comments', async (req, res) => {
   const { articleName } = req.params;
+  console.log(articleName)
   const { postedBy, text } = req.body;
-  const article = articleInfo.find(a => a.articleName === articleName);
-  article.comments.push({ 
-    postedBy, 
-    text });
-  res.json(article);
+  console.log(postedBy, text)
+  const newComment = { postedBy, text };
+  console.log(newComment)
+  const updatedComment = await db.collection('articles').findOneAndUpdate({ articleName }, {
+    $push: { comments: newComment } 
+  }, {
+    returnDocument: 'after',
+  });
+  res.json(updatedComment);
 });
 
 
