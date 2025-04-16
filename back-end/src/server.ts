@@ -16,6 +16,7 @@ app.post('/api/articles/:articleName/upvote', (req, res) => {
   res.json(article);
 });
 
+
 app.post('/api/articles/:articleName/comments', (req, res) => {
   const { articleName } = req.params;
   const { postedBy, text } = req.body;
@@ -25,6 +26,8 @@ app.post('/api/articles/:articleName/comments', (req, res) => {
     text });
   res.json(article);
 });
+
+
 
 // We can also use this syntax for upvote
 // app.post('/api/articles/:articleName/upvote', (req, res) => {
