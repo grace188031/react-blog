@@ -4,8 +4,9 @@
   "main": "dist/app.js",
   "type": "module",
   "scripts": {
-    "start": "tsc && node dist/app.js",
+    "start": "tsc && node dist/server.js",
     "dev": "tsx watch src/server.ts",
+    "build": "tsc",
     "lint": "eslint . --ext .ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,7 +24,6 @@
   },
   "dependencies": {
     "@types/express": "^5.0.1",
-    "express": "^5.1.0",
-    "tsx": "^4.19.3"
+    "express": "^5.1.0"
   }
 }
