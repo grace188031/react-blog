@@ -3,18 +3,36 @@ import { MongoClient,ServerApiVersion } from 'mongodb';
 const app = express();
 const port = 8000;
 
-// const articleInfo = [
-//   { articleName: 'learn-node', upvotes: 0, comments: [] },
-//   { articleName: 'learn-react', upvotes: 0, comments: [] },
-//   { articleName: 'mongodb', upvotes: 0,  comments: [] },
-// ]
 
 app.use(express.json());
 
-app.post('/api/articles/:articleName/upvote', (req, res) => {
-  const article = articleInfo.find(a => a.articleName === req.params.articleName);
-  article.upvotes += 1;
-  res.json(article);
+let db;
+
+async function connectToDB() {
+
+  const uri = 'mongodb://127.0.0.1:27017';
+  const client = new MongoClient(uri, {
+    serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+  await client.connect();
+  db = client.db('full-stack-react-db');
+}
+
+
+app.post('/api/articles/:articleName/upvote', async (req, res) => {
+  const { articleName } = req.params;
+
+  const updatedArticle = await db.collection('articles').findOneAndUpdate({articleName }, {
+      $inc: { upvotes: 1 }
+    }, {
+      returnDocument: 'after',
+  });
+  res.json(updatedArticle);
 });
 
 app.post('/api/articles/:articleName/comments', (req, res) => {
@@ -27,32 +45,19 @@ app.post('/api/articles/:articleName/comments', (req, res) => {
   res.json(article);
 });
 
-// We can also use this syntax for upvote
-// app.post('/api/articles/:articleName/upvote', (req, res) => {
-//   const { articleName } = req.params;
-//   const article = articleInfo.find(a => a.articleName === articleName);
-//   article.upvotes += 1;
-//   res.send(`The article with the name: ${articleName} now has ${article.upvotes} upvotes!`);
-// });
 
 app.get('/api/articles/:articleName', async (req, res) => {
   const { articleName } = req.params;
-  const uri = 'mongodb://127.0.0.1:27017';
-  const client = new MongoClient(uri, {
-    serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-  });
-
-  await client.connect();
-  const db = client.db('full-stack-react-db');
   const article = await db.collection('articles').findOne({ articleName } );
   res.json(article);
 });
 
+async function start() {
+  await connectToDB();
 
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);
 });
+}
+
+start();
