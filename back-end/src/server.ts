@@ -2,19 +2,28 @@ import express from 'express';
 const app = express();
 const port = 8000;
 
+const articleInfo = [
+  { articleName: 'learn-node', upvotes: 0,},
+  { articleName: 'learn-react', upvotes: 0},
+  { articleName: 'mongodb', upvotes: 0},
+]
+
 app.use(express.json());
 
-app.get('/hello', (req, res) => {
-  res.send('Hello from a GET Engdpoint!');
+app.post('/api/articles/:articleName/upvote', (req, res) => {
+  const article = articleInfo.find(a => a.articleName === req.params.articleName);
+  article.upvotes += 1;
+  res.send(`The article with the name: ${req.params.articleName} now has ${article.upvotes} upvotes!`);
 });
 
-app.post('/hello', (req, res) => {
-  res.send(`Hello, ${req.body.name} from a POST Endpoint!`);
-});
+// We can also use this syntax for upvote
+// app.post('/api/articles/:articleName/upvote', (req, res) => {
+//   const { articleName } = req.params;
+//   const article = articleInfo.find(a => a.articleName === articleName);
+//   article.upvotes += 1;
+//   res.send(`The article with the name: ${articleName} now has ${article.upvotes} upvotes!`);
+// });
 
-app.post('/hello/:firstname', (req, res) => {
-  res.send(`Hello, ${req.params.firstname} from a POST Endpoint!`);
-});
 
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);
