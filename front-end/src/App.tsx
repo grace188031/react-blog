@@ -6,7 +6,7 @@ import './App.css'
 import HomePage from './pages/HomePage.tsx';
 import AboutPage from './pages/AboutPage.tsx';
 import ArticlesListPage from './pages/ArticlesListPage.tsx';  
-import ArticlePage from './pages/ArticlePage.tsx';
+import ArticlePage, { loader as articleLoader } from './pages/ArticlePage.tsx';
 import Layout from './Layout.tsx';
 import NotFoundPage from './pages/NotFoundPage.tsx';
 import axios from 'axios';
@@ -27,17 +27,10 @@ const routes = [{
   }, {
     path: '/articles/:name',
     element: <ArticlePage />,
-    loader: async function() {
-      // await axios.get('http://localhost:8000/api/articles/:name')
-      const response = await axios.get('/api/articles/learn-node');
-      const { upvotes, comments } = response.data;
-      return { upvotes, comments };
-
-    }
+    // add the articleLoader function to the route
+    loader: articleLoader
   }]
 }]
-
-
 
 const router = createBrowserRouter(routes);
 
