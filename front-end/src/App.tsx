@@ -9,6 +9,7 @@ import ArticlesListPage from './pages/ArticlesListPage.tsx';
 import ArticlePage from './pages/ArticlePage.tsx';
 import Layout from './Layout.tsx';
 import NotFoundPage from './pages/NotFoundPage.tsx';
+import axios from 'axios';
 
 const routes = [{
   path: '/',
@@ -26,6 +27,13 @@ const routes = [{
   }, {
     path: '/articles/:name',
     element: <ArticlePage />,
+    loader: async function() {
+      // await axios.get('http://localhost:8000/api/articles/:name')
+      const response = await axios.get('/api/articles/learn-node');
+      const { upvotes, comments } = response.data;
+      return { upvotes, comments };
+
+    }
   }]
 }]
 
