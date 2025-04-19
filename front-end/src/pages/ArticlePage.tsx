@@ -38,6 +38,7 @@ export default function ArticlePage() {
       <p>This article has Upvotes: {upvotes}</p>
       {article.content.map(p => <p key={p}>{p}</p>)}
       <AddCommentForm onAddComment={onAddComment} />
+      <h3>Comments</h3>
       < CommentsList comments={comments} />
     </div>
     </> 

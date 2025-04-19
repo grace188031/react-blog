@@ -11,7 +11,11 @@ export default function AddCommentForm( { onAddComment }) {
                 <input id="nameText" value={nameText} type="text" name="name"  onChange={ e => setNameText(e.target.value)}/>
                 <label htmlFor="commentText"> Comment:</label>
                 <textarea id="commentText" value={commentText} name="text" onChange={ e => setCommentText(e.target.value)} />
-                <button onClick={() => onAddComment( {nameText, commentText} )} >Add Comment</button>
+                <button onClick={() => {
+                    onAddComment( {nameText, commentText} ) ;
+                    setNameText("");
+                    setCommentText("");
+                }}> Add Comment </button>
         </div>
     )
 }
