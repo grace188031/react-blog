@@ -1,5 +1,6 @@
 import { useParams, useLoaderData } from 'react-router-dom';
 import articles from '../article-content';
+import CommentsList from '../CommentsList';
 import axios from 'axios';
 
 export default function ArticlePage() {
@@ -16,6 +17,7 @@ export default function ArticlePage() {
       <h1>{article.title}</h1>
       <p>This article has Upvotes: {upvotes}</p>
       {article.content.map(p => <p key={p}>{p}</p>)}
+      < CommentsList comments={comments} />
     </div>
     </> 
   );
