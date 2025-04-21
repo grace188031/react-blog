@@ -1,5 +1,18 @@
 import express from 'express';
 import { MongoClient,ServerApiVersion } from 'mongodb';
+import admin from 'firebase-admin';
+import fs from 'fs';
++
+const serviceAccount = JSON.parse(
+  fs.readFileSync('./credentials.json')
+);
+
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+
 const app = express();
 const port = 8000;
 
