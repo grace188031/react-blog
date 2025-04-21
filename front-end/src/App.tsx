@@ -9,7 +9,8 @@ import ArticlesListPage from './pages/ArticlesListPage.tsx';
 import ArticlePage, { loader as articleLoader } from './pages/ArticlePage.tsx';
 import Layout from './Layout.tsx';
 import NotFoundPage from './pages/NotFoundPage.tsx';
-import axios from 'axios';
+import LoginPage from './pages/LoginPage.tsx';
+import CreateAccountPage from './pages/CreateAccountPage.tsx';
 
 const routes = [{
   path: '/',
@@ -29,7 +30,13 @@ const routes = [{
     element: <ArticlePage />,
     // add the articleLoader function to the route
     loader: articleLoader
-  }]
+  }, {
+    path: '/login',
+    element: <LoginPage />
+}, {
+    path: '/create-account',
+    element: <CreateAccountPage />
+}]
 }]
 
 const router = createBrowserRouter(routes);
