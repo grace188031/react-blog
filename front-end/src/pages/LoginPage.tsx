@@ -8,10 +8,12 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
+    const navigate = useNavigate();
+
     async function logIn() {
         try {
             await signInWithEmailAndPassword(getAuth(), email, password);
-            useNavigate('/'); // Redirect to home page after successful login
+            navigate('/articleslist'); // Redirect to home page after successful login
         } catch (e) {
             setError(e.message);
         }
