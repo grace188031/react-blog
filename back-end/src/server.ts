@@ -65,12 +65,29 @@ app.use(async function(req, res, next) {
 app.post('/api/articles/:articleName/upvote', async (req, res) => {
   const { articleName } = req.params;
 
+  // The req.user has the uid of the user who is logged in which is then stored in the const uid variable.
+  const { uid } = req.user;
+  
+  const article = await db.collection('articles').findOne({ articleName});
+  // const upvoteIds is an array that contains the ids of the users who have upvoted the article. The upvoteIds is used to check if the user has already upvoted the article. If the user has already upvoted the article, the user will not be able to upvote the article again.
+  // the || [] is used to assign an empty array to the upvoteIds variable if the upvoteIds is undefined. This is done to avoid errors when checking if the user has already upvoted the article.
+  const upvoteIds = article.upvoteIds || [];
+  // The canUpvote is a boolean variable that checks if the user can upvote the article. If the user is logged in and has not already upvoted the article, the user can upvote the article.
+  const canUpvote = uid && !upvoteIds.includes(uid);
+
+  if (canUpvote) {
   const updatedArticle = await db.collection('articles').findOneAndUpdate({articleName }, {
-      $inc: { upvotes: 1 }
+      $inc: { upvotes: 1 },
+      //push is used to add the uid of the user who has upvoted the article to the upvoteIds array. This is done to keep track of the users who have upvoted the article. The $push operator is used to add the uid to the upvoteIds array.
+      $push: { upvoteIds: uid },
+
     }, {
       returnDocument: 'after',
   });
   res.json(updatedArticle);
+} else {
+  res.sendStatus(403);
+}
 });
 
 app.post('/api/articles/:articleName/comments', async (req, res) => {
