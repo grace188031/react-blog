@@ -55,11 +55,12 @@ app.use(async function(req, res, next) {
     const user  = await admin.auth().verifyIdToken(authtoken);
     // The user object is assigned to the req.user variable. This variable can be used in the next middleware function to identify the user. Sample are the post endpoints below.
     req.user = user;
+    next();
   } else {
     res.sendStatus(400);
   }
   // Done with the middleware function. The next() function is called to pass control to the next middleware function in the stack.
-  next();
+
   });
 
 app.post('/api/articles/:articleName/upvote', async (req, res) => {
