@@ -1,6 +1,6 @@
 import express from 'express';
 import { MongoClient,ServerApiVersion } from 'mongodb';
-import admin from 'firebase-admin';
+import admin, { auth } from 'firebase-admin';
 import fs from 'fs';
 
 const serviceAccount = JSON.parse(
@@ -36,6 +36,31 @@ async function connectToDB() {
   db = client.db('full-stack-react-db');
 }
 
+app.get('/api/articles/:articleName', async (req, res) => {
+  const { articleName } = req.params;
+  const article = await db.collection('articles').findOne({ articleName } );
+  res.json(article);
+});
+
+// Middleware to check every request if the user is authenticated. The next is a callback function that is called when the middleware is done. It is used to pass control to the next middleware function in the stack.
+app.use(async function(req, res, next) {
+  // authtoken is the name of the header that we are sending from the front-end to the back-end. It is used to identify the user.
+  // assigning the authtoken to the constant variable authtoken
+  const { authtoken } = req.headers;
+
+  // use firebase-admin to verify the token. If the token is valid, it will return the user object. If the token is invalid, it will throw an error.
+  if (authtoken) {
+    // verifyIdToken is a method that verifies the token and returns the user object. The user object contains the uid, email, and other information about the user.
+    // The authtoken is passed to the verifyIdToken method to verify the token.
+    const user  = await admin.auth().verifyIdToken(authtoken);
+    // The user object is assigned to the req.user variable. This variable can be used in the next middleware function to identify the user. Sample are the post endpoints below.
+    req.user = user;
+  } else {
+    res.sendStatus(400);
+  }
+  // Done with the middleware function. The next() function is called to pass control to the next middleware function in the stack.
+  next();
+  });
 
 app.post('/api/articles/:articleName/upvote', async (req, res) => {
   const { articleName } = req.params;
@@ -64,11 +89,6 @@ app.post('/api/articles/:articleName/comments', async (req, res) => {
 });
 
 
-app.get('/api/articles/:articleName', async (req, res) => {
-  const { articleName } = req.params;
-  const article = await db.collection('articles').findOne({ articleName } );
-  res.json(article);
-});
 
 async function start() {
   await connectToDB();
