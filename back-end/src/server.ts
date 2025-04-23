@@ -28,7 +28,7 @@ app.use(express.json());
 
 let db: Db;
 
-async function connectToDB() {
+async function connectToDB(): Promise<void> {
   const uri = 'mongodb://127.0.0.1:27017';
   const client = new MongoClient(uri, {
     serverApi: {
@@ -37,6 +37,7 @@ async function connectToDB() {
       deprecationErrors: true,
     },
   });
+
 
   await client.connect();
   db = client.db('full-stack-react-db');
@@ -108,3 +109,12 @@ app.post('/api/articles/:articleName/comments', (req: Request, res: Response) =>
       { returnDocument: 'after' }
     );
   })});
+
+  async function start(): Promise<void> {
+    await connectToDB();
+    app.listen(port, () => {
+      console.log(`Express is listening at http://localhost:${port}`);
+    });
+  }
+  
+  start();
