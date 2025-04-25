@@ -2,7 +2,10 @@ import express, { Request, Response, NextFunction } from 'express';
 import { MongoClient, Db, ServerApiVersion, Document } from 'mongodb';
 import admin from 'firebase-admin';
 import fs from 'fs';
-
+import  { fileURLToPath } from 'url';
+import path from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // TypeScript declaration for Express Request to include user property
 declare global {
@@ -42,6 +45,13 @@ async function connectToDB(): Promise<void> {
   await client.connect();
   db = client.db('full-stack-react-db');
 }
+
+app.use(express.static(path.join(__dirname, '../public/dist')));
+
+app.get(/^(?!\/api).+/), (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../public/dist', 'index.html'));
+};
+
 
 app.get('/api/articles/:articleName', async (req: Request, res: Response) => {
   const { articleName } = req.params;
@@ -109,11 +119,13 @@ app.post('/api/articles/:articleName/comments', (req: Request, res: Response) =>
       { returnDocument: 'after' }
     );
   })});
+  // Use environment variable PORT if available, otherwise default to 8000
+  const PORT = process.env.PORT || 8000;
 
   async function start(): Promise<void> {
     await connectToDB();
-    app.listen(port, () => {
-      console.log(`Express is listening at http://localhost:${port}`);
+    app.listen(PORT, () => {
+      console.log(`Express is listening at http://localhost:${PORT}`);
     });
   }
   
