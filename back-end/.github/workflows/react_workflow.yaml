@@ -2,7 +2,7 @@ name: Deploy to AWS
 
 on:
   push:
-    branches: [ main ]
+    branches: [ Ch6_3-Build_docker ]
 
 jobs:
   deploy:
