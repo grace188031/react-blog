@@ -16,9 +16,17 @@ declare global {
   }
 }
 
-const serviceAccount = JSON.parse(
-  fs.readFileSync('./credentials.json', 'utf-8')
-);
+// const serviceAccount = JSON.parse(
+//   fs.readFileSync('./credentials.json', 'utf-8')
+// );
+
+// environment variable for Firebase credentials
+const serviceAccountJson = process.env.FIREBASE_CREDENTIALS_JSON;
+if (!serviceAccountJson) {
+  throw new Error('Missing FIREBASE_CREDENTIALS_JSON environment variable');
+}
+
+const serviceAccount = JSON.parse(serviceAccountJson);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
