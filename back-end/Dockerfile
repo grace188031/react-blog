@@ -10,12 +10,18 @@ COPY package.json tsconfig.json ./
 # Install dependencies
 RUN npm install
 
+
+#INSTALL MongoDB
+RUN npm install --save-dev @types/mongodb
+
+
+# Add this to both RUN npm install sections:
+RUN npm install @aws-sdk/client-secrets-manager
+
 # Copy source code
 COPY src ./src
 COPY public ./public
 
-#INSTALL MongoDB
-RUN npm install --save-dev @types/mongodb
 
 # Build the TypeScript code (compiles src/*.ts into dist/*.js)
 RUN npm run build

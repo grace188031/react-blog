@@ -1,0 +1,21 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: react-blog-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: piconeuron.com
+      http:
+        paths:
+          - path: /react
+            pathType: Prefix
+            backend:
+              service:
+                name: react-blog-service
+                port:
+                  number: 80
+
