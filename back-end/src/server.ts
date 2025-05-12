@@ -6,6 +6,8 @@ import  { fileURLToPath } from 'url';
 import path from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
+
 
 // TypeScript declaration for Express Request to include user property
 declare global {
@@ -15,22 +17,17 @@ declare global {
     }
   }
 }
+let credentials: any;
 
-// const serviceAccount = JSON.parse(
-//   fs.readFileSync('./credentials.json', 'utf-8')
-// );
-
-// environment variable for Firebase credentials
-const serviceAccountJson = process.env.FIREBASE_CREDENTIALS_JSON;
-if (!serviceAccountJson) {
-  throw new Error('Missing FIREBASE_CREDENTIALS_JSON environment variable');
+// Function to fetch secrets from AWS Secrets Manager
+async function loadSecrets() {
+  const secretsManager = new SecretsManagerClient({ region: process.env.AWS_REGION });
+  const secret = await secretsManager.send(
+    new GetSecretValueCommand({ SecretId: 'react-blog-secrets' })
+  );
+  credentials = JSON.parse(secret.SecretString || '{}');
 }
 
-const serviceAccount = JSON.parse(serviceAccountJson);
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
 
 const app = express();
 const port = 8000;
@@ -40,8 +37,8 @@ app.use(express.json());
 let db: Db;
 
 async function connectToDB(): Promise<void> {
-  const uri = process.env.MONGODB_USERNAME 
-  ? `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.DATABASE_NAME}/?retryWrites=true&w=majority&appName=Cluster0`
+  const uri = credentials.MONGODB_USERNAME 
+  ? `mongodb+srv://${credentials.MONGODB_USERNAME}:${credentials.MONGODB_PASSWORD}@${credentials.DATABASE_NAME}/?retryWrites=true&w=majority&appName=Cluster0`
   : 'mongodb://127.0.0.1:27017';
   const client = new MongoClient(uri, {
     serverApi: {
@@ -130,9 +127,20 @@ app.post('/api/articles/:articleName/comments', (req: Request, res: Response) =>
     );
   })});
   // Use environment variable PORT if available, otherwise default to 8000
-  const PORT = process.env.PORT || 8000;
+  const PORT = credentials.PORT || 8000;
 
   async function start(): Promise<void> {
+    await loadSecrets();
+    // environment variable for Firebase credentials
+  const serviceAccountJson = credentials.FIREBASE_CREDENTIALS_JSON;
+  if (!serviceAccountJson) {
+    throw new Error('Missing FIREBASE_CREDENTIALS_JSON environment variable');
+  }
+  const serviceAccount = JSON.parse(serviceAccountJson);
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+  
     await connectToDB();
     app.listen(PORT, () => {
       console.log(`Express is listening at http://localhost:${PORT}`);
