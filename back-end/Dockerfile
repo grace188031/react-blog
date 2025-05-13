@@ -35,6 +35,8 @@ WORKDIR /app
 COPY --from=builder /app/package.json .
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/dist ./dist
+#missing line  error 404 previously
+COPY --from=builder /app/dist /app/public/dist  
 
 # Install only production dependencies (no devDependencies)
 RUN npm install --omit=dev
