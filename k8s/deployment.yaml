@@ -18,7 +18,7 @@ spec:
       serviceAccountName: secrets-access-sa
       containers:
         - name: react-full-stack
-          image: 443370678519.dkr.ecr.us-east-1.amazonaws.com/react-fullstack:latest
+          image: 443370678519.dkr.ecr.us-east-1.amazonaws.com/react-full-stack:latest
           ports:
             - containerPort: 8000
           env:
