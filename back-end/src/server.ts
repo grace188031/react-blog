@@ -127,7 +127,7 @@ app.post('/api/articles/:articleName/comments', (req: Request, res: Response) =>
     );
   })});
   // Use environment variable PORT if available, otherwise default to 8000
-  const PORT = credentials.PORT || 8000;
+  const PORT = process.env.PORT || 8000;
 
   async function start(): Promise<void> {
     await loadSecrets();
