@@ -48,10 +48,26 @@ jobs:
         run: |
           aws eks update-kubeconfig \
             --region ${{ secrets.AWS_REGION }} \
-            --name eks-cluster-react-fullstack
+            --name eks-cluster-react-cluster
 
       # Apply Kubernetes manifests
       - name: Deploy to EKS with kubectl
         run: |
           kubectl apply -f k8s/service-account.yaml
           kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          kubectl apply -f k8s/ingress.yaml
+
+      # Wait for Ingress LoadBalancer IP and print
+      - name: Wait for Ingress public IP
+        run: |
+          echo "Waiting for NGINX Ingress to get a public IP..."
+          for i in {1..30}; do
+            INGRESS_IP=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+            if [ -n "$INGRESS_IP" ]; then
+              echo "Ingress is available at: http://$INGRESS_IP"
+              break
+            fi
+            echo "Still waiting... ($i)"
+            sleep 10
+          done
